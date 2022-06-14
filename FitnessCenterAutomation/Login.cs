@@ -25,24 +25,41 @@ namespace FitnessCenterAutomation
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            SqlCommand cmd = new SqlCommand("select * from admin where name=@p1 and password=@p2", connection.conn());
-            cmd.Parameters.AddWithValue("@p1", txtUserName.Text);
-            cmd.Parameters.AddWithValue("@p2", txtPassword.Text);
-            SqlDataReader read = cmd.ExecuteReader();
-            if (read.Read())
+            try
             {
-                Mainpage main = new Mainpage();
-                main.Show();
-                this.Hide();
+                if (txtPassword.Text.Length!=8)
+                {
+                    MessageBox.Show("Your password must be 8 character!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    SqlCommand cmd = new SqlCommand("select * from admin where name=@p1 and password=@p2", connection.conn());
+                    cmd.Parameters.AddWithValue("@p1", txtUserName.Text);
+                    cmd.Parameters.AddWithValue("@p2", txtPassword.Text);
+                    SqlDataReader read = cmd.ExecuteReader();
+                    if (read.Read())
+                    {
+                        Mainpage main = new Mainpage();
+                        main.Show();
+                        this.Hide();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Wrong username or password!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        txtUserName.Clear();
+                        txtPassword.Clear();
+                        txtUserName.Focus();
+                    }
+                    connection.conn().Close();
+                }
+                
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Wrong username or password!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                txtUserName.Clear();
-                txtPassword.Clear();
-                txtUserName.Focus();
+
+                Console.WriteLine(ex.Message);
             }
-            connection.conn().Close();
+            
         }
 
         private void btnReset_Click(object sender, EventArgs e)
